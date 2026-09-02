@@ -14,11 +14,9 @@
       --sub: #6e6e73;
       --line: #d9d9df;
       --accent: #2563eb;
-      --accent-weak: #eaf1ff;
       --danger: #b42318;
-      --shadow: 0 12px 30px rgba(0, 0, 0, .07);
+      --shadow: 0 12px 30px rgba(0,0,0,.07);
     }
-
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); }
     body {
@@ -26,12 +24,10 @@
       -webkit-font-smoothing: antialiased;
       padding: max(20px, env(safe-area-inset-top)) 16px max(32px, env(safe-area-inset-bottom));
     }
-
     .wrap { width: min(100%, 560px); margin: 0 auto; }
     header { margin-bottom: 16px; }
     h1 { margin: 0 0 6px; font-size: clamp(26px, 7vw, 36px); letter-spacing: -.02em; }
     .lead { margin: 0; color: var(--sub); font-size: 14px; line-height: 1.6; }
-
     .card {
       background: var(--card);
       border: 1px solid rgba(0,0,0,.06);
@@ -40,7 +36,6 @@
       padding: 16px;
       margin-bottom: 14px;
     }
-
     .canvas-wrap {
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -54,7 +49,6 @@
         linear-gradient(to bottom, transparent calc(50% - .5px), #ededf1 calc(50% - .5px), #ededf1 calc(50% + .5px), transparent calc(50% + .5px));
       position: relative;
     }
-
     canvas {
       display: block;
       width: 100%;
@@ -62,7 +56,6 @@
       touch-action: none;
       cursor: crosshair;
     }
-
     .hint {
       position: absolute;
       inset: 0;
@@ -75,14 +68,12 @@
       transition: opacity .15s ease;
     }
     .hint.hidden { opacity: 0; }
-
     .toolbar {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-top: 12px;
     }
-
     button {
       appearance: none;
       border: 0;
@@ -99,7 +90,6 @@
     button:disabled { opacity: .45; cursor: default; }
     .secondary { background: #f0f0f3; color: var(--text); }
     .primary { grid-column: 1 / -1; background: var(--accent); color: white; font-size: 17px; }
-
     .status {
       min-height: 24px;
       margin: 10px 2px 0;
@@ -108,42 +98,30 @@
       line-height: 1.5;
     }
     .status.error { color: var(--danger); }
-
     .section-title { margin: 0 0 10px; font-size: 15px; color: var(--sub); font-weight: 700; }
-    .candidates { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-    .candidate {
-      min-height: 54px;
-      padding: 6px;
-      background: var(--accent-weak);
-      color: #1546a0;
-      font-size: clamp(24px, 7vw, 34px);
-      border: 1px solid #cfddff;
-    }
-    .empty { grid-column: 1 / -1; color: var(--sub); font-size: 14px; padding: 10px 2px; }
-
     .result-row { display: flex; gap: 8px; }
     #result {
       width: 100%;
       min-width: 0;
-      height: 52px;
+      height: 56px;
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: 0 14px;
       font: inherit;
-      font-size: 22px;
+      font-size: 24px;
       background: #fff;
       color: var(--text);
     }
     .small-btn { flex: 0 0 auto; min-width: 74px; background: #f0f0f3; }
     .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-
-    .note {
+    .last-recognized {
+      margin: 10px 0 0;
+      min-height: 24px;
       color: var(--sub);
-      font-size: 12px;
-      line-height: 1.7;
-      margin: 12px 2px 0;
+      font-size: 14px;
     }
-
+    .last-recognized strong { color: var(--accent); font-size: 22px; }
+    .note { color: var(--sub); font-size: 12px; line-height: 1.7; margin: 12px 2px 0; }
     @media (min-width: 480px) {
       .card { padding: 20px; }
       .toolbar { grid-template-columns: 1fr 1fr 1.4fr; }
@@ -155,7 +133,7 @@
   <main class="wrap">
     <header>
       <h1>指書き文字認識</h1>
-      <p class="lead">マスの中に指・ペン・マウスで文字を書いて「認識する」を押してください。まずは1文字ずつ書くのがおすすめです。</p>
+      <p class="lead">1文字書いて「認識する」を押すと、認識候補の1位を自動で入力します。そのまま次の文字を書けます。</p>
     </header>
 
     <section class="card" aria-label="手書き入力">
@@ -166,24 +144,18 @@
       <div class="toolbar">
         <button class="secondary" id="undoBtn" type="button">一画戻す</button>
         <button class="secondary" id="clearBtn" type="button">全部消す</button>
-        <button class="primary" id="recognizeBtn" type="button">認識する</button>
+        <button class="primary" id="recognizeBtn" type="button">認識して入力</button>
       </div>
       <div class="status" id="status" aria-live="polite">文字を書いてください。</div>
-    </section>
-
-    <section class="card" aria-label="認識候補">
-      <p class="section-title">認識候補</p>
-      <div class="candidates" id="candidates">
-        <div class="empty">認識すると候補がここに表示されます。</div>
-      </div>
     </section>
 
     <section class="card" aria-label="入力結果">
       <p class="section-title">入力結果</p>
       <div class="result-row">
-        <input id="result" type="text" inputmode="text" autocomplete="off" placeholder="候補をタップすると入ります" aria-label="入力結果" />
+        <input id="result" type="text" inputmode="text" autocomplete="off" placeholder="認識した文字が自動で入ります" aria-label="入力結果" />
         <button class="small-btn" id="backspaceBtn" type="button">⌫</button>
       </div>
+      <p class="last-recognized" id="lastRecognized">まだ認識していません。</p>
       <div class="result-actions">
         <button class="secondary" id="copyBtn" type="button">コピー</button>
         <button class="secondary" id="resultClearBtn" type="button">結果を消す</button>
@@ -198,8 +170,8 @@
       const wrap = document.getElementById('canvasWrap');
       const hint = document.getElementById('hint');
       const statusEl = document.getElementById('status');
-      const candidatesEl = document.getElementById('candidates');
       const resultEl = document.getElementById('result');
+      const lastRecognizedEl = document.getElementById('lastRecognized');
       const undoBtn = document.getElementById('undoBtn');
       const clearBtn = document.getElementById('clearBtn');
       const recognizeBtn = document.getElementById('recognizeBtn');
@@ -309,39 +281,12 @@
         statusEl.classList.toggle('error', isError);
       }
 
-      function clearPad(clearCandidates = true) {
+      function clearPad() {
         strokes = [];
         currentStroke = null;
         drawing = false;
         startTime = 0;
         redraw();
-        if (clearCandidates) renderCandidates([]);
-        setStatus('文字を書いてください。');
-      }
-
-      function renderCandidates(items) {
-        candidatesEl.innerHTML = '';
-        if (!items || items.length === 0) {
-          const empty = document.createElement('div');
-          empty.className = 'empty';
-          empty.textContent = '認識すると候補がここに表示されます。';
-          candidatesEl.appendChild(empty);
-          return;
-        }
-
-        items.slice(0, 10).forEach(text => {
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'candidate';
-          button.textContent = text;
-          button.setAttribute('aria-label', `候補 ${text}`);
-          button.addEventListener('click', () => {
-            resultEl.value += text;
-            clearPad(true);
-            setStatus(`「${text}」を入力しました。次の文字を書けます。`);
-          });
-          candidatesEl.appendChild(button);
-        });
       }
 
       async function recognize() {
@@ -349,7 +294,6 @@
         recognizing = true;
         updateButtons();
         setStatus('認識しています…');
-        renderCandidates([]);
 
         const payload = {
           app_version: 0.4,
@@ -363,7 +307,7 @@
               writing_area_height: logicalHeight
             },
             pre_context: resultEl.value,
-            max_num_results: 10,
+            max_num_results: 5,
             max_completions: 0,
             ink: strokes
           }]
@@ -384,16 +328,22 @@
           const items = ok && data[1] && data[1][0] && Array.isArray(data[1][0][1]) ? data[1][0][1] : [];
           if (!items.length) throw new Error('候補が取得できませんでした');
 
-          renderCandidates(items);
-          setStatus('候補をタップすると入力結果に追加されます。');
+          const top = items[0];
+          resultEl.value += top;
+          lastRecognizedEl.innerHTML = `認識結果：<strong>${escapeHtml(top)}</strong>`;
+          clearPad();
+          setStatus(`「${top}」を自動入力しました。次の文字を書けます。`);
         } catch (err) {
           console.error(err);
-          candidatesEl.innerHTML = '<div class="empty">認識に失敗しました。線を消してもう一度試すか、下の入力欄へ直接入力してください。</div>';
-          setStatus('手書き認識サービスへ接続できませんでした。', true);
+          setStatus('手書き認識サービスへ接続できませんでした。もう一度試してください。', true);
         } finally {
           recognizing = false;
           updateButtons();
         }
+      }
+
+      function escapeHtml(text) {
+        return String(text).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
       }
 
       canvas.addEventListener('pointerdown', beginStroke, { passive: false });
@@ -405,11 +355,14 @@
         if (strokes.length > 0) strokes.pop();
         if (strokes.length === 0) startTime = 0;
         redraw();
-        renderCandidates([]);
         setStatus(strokes.length ? `${strokes.length}画 入力中` : '文字を書いてください。');
       });
 
-      clearBtn.addEventListener('click', () => clearPad(true));
+      clearBtn.addEventListener('click', () => {
+        clearPad();
+        setStatus('文字を書いてください。');
+      });
+
       recognizeBtn.addEventListener('click', recognize);
 
       backspaceBtn.addEventListener('click', () => {
@@ -419,6 +372,7 @@
 
       resultClearBtn.addEventListener('click', () => {
         resultEl.value = '';
+        lastRecognizedEl.textContent = 'まだ認識していません。';
         resultEl.focus();
       });
 
